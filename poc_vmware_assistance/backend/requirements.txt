@@ -1,0 +1,18 @@
+# Framework principal
+fastapi==0.110.1
+uvicorn[standard]==0.29.0
+
+# Validación y manejo de datos
+pydantic==2.7.1
+pydantic-settings==2.2.1
+
+# Cliente HTTP para comunicar servicios internos y con VMware
+httpx==0.27.0
+requests==2.31.0
+
+# Integración con AWS Bedrock
+boto3==1.34.113
+botocore==1.34.113
+
+# Testing
+pytest==8.2.2
