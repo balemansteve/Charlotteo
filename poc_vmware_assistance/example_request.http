@@ -1,0 +1,10 @@
+### Enviar consulta al /prompt
+POST http://localhost:8000/api/v1/prompt/
+Content-Type: application/json
+
+{
+  "message": "¿Cuanta CPU está siendo usada por VM SRV-WEB01?"
+}
+
+### Consultar el mock directamente
+GET http://localhost:8000/api/v1/metrics/SRV-WEB01
