@@ -1,5 +1,5 @@
 """
-Módulo que maneja la lógica para enviar mensajes a Amazon Bedrock
+Módulo que maneja la lógica para enviar mensajes a OpenAI
 y recibir respuestas.
 """
 
