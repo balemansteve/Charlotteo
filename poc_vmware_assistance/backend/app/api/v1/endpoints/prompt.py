@@ -18,7 +18,7 @@ vmware_client = VmwareClient()
 
 @router.post("/")
 def handle_prompt(request: PromptRequest):
-    # Contruir el prompt
+    # Construir el prompt
     prompt = prompt_builder.build_prompt(request.message)
 
     # Enviar a OpenAI

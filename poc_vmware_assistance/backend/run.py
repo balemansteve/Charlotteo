@@ -12,4 +12,4 @@ app = FastAPI(
 )
 
 app.include_router(prompt.router, prefix="/api/v1/prompt", tags=["Prompt"])
-app.include_router(metrics.router, prefif="/api/v1/metrics", tags=["Metrics"])
+app.include_router(metrics.router, prefix="/api/v1/metrics", tags=["Metrics"])
