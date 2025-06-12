@@ -6,6 +6,7 @@ y recibir respuestas.
 import openai
 import os
 from dotenv import load_dotenv
+import json
 
 class OpenAIClient:
     """
@@ -18,7 +19,8 @@ class OpenAIClient:
         """
         load_dotenv()
         self.api_key = os.getenv("OPENAI_API_KEY")
-        openai.api_key = self.api_key
+        # openai.api_key = self.api_key
+        self.client = openai.OpenAI(api_key=self.api_key)
         self.model = "gpt-4o"  # Modelo por defecto, puede ser cambiado según sea necesario
 
     def send_prompt(self, prompt: str):
@@ -28,7 +30,7 @@ class OpenAIClient:
         :param prompt: El texto del prompt a enviar.
         :return: Respuesta de la API de OpenAI.
         """
-        response = openai.ChatCompletion.create(
+        response = self.client.chat.completions.create(
             model=self.model,
             messages=[
                 {"role": "system", "content": "Eres un asistente de VMware que ayuda a sus usuarios a diagnosticar problemas, encontrar soluciones y dar recomendaciones."},
