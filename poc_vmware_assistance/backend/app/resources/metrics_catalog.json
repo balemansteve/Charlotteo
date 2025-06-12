@@ -1,0 +1,16 @@
+[
+  {
+    "metric_key": "cpu|usage_average",
+    "description": "% de CPU usada activamente",
+    "healthy_threshold": "0–70%",
+    "warning_threshold": "71–85%",
+    "critical_threshold": ">85%"
+  },
+  {
+    "metric_key": "mem|usage_average",
+    "description": "% de RAM usada",
+    "healthy_threshold": "0–70%",
+    "warning_threshold": "71–85%",
+    "critical_threshold": ">85%"
+  }
+]
