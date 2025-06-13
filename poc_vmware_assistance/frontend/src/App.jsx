@@ -8,7 +8,10 @@ import {
   Flex,
   Text,
   Spinner,
+  IconButton,
+  useColorMode,
 } from '@chakra-ui/react'
+import { FaMoon, FaSun, FaRedo } from 'react-icons/fa'
 import ChatMessage from './components/ChatMessage'
 import ChatInput from './components/ChatInput'
 import axios from 'axios'
@@ -23,6 +26,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef(null)
   const toast = useToast()
+  const { colorMode, toggleColorMode } = useColorMode()
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -35,17 +39,15 @@ function App() {
   const handleSendMessage = async (message) => {
     if (!message.trim()) return
 
-    // Agregar mensaje del usuario
     setMessages((prev) => [...prev, { text: message, isUser: true }])
     setIsLoading(true)
 
     try {
-      // Aquí deberás reemplazar la URL con tu endpoint de FastAPI
+      // reemplazar la url con el endpoint de fastapi
       const response = await axios.post('http://localhost:8000/chat', {
         message,
       })
 
-      // Agregar respuesta del asistente
       setMessages((prev) => [
         ...prev,
         { text: response.data.response, isUser: false, name: 'VMware Assistance' },
@@ -64,22 +66,61 @@ function App() {
     }
   }
 
+  const handleResetChat = () => {
+    setMessages([
+      {
+        text: 'Hola, soy tu asistente virtual. ¿En qué puedo ayudarte?',
+        isUser: false,
+      },
+    ])
+  }
+
   return (
     <Container maxW="container.xl" h="100vh" py={4}>
       <VStack h="full" spacing={4}>
-        <Box w="full" textAlign="center">
-          <Heading size="lg" color="blue.600">
-            VMware Assistance
-          </Heading>
-          <Text color="gray.600">
-            Diagnóstico inteligente de infraestructura virtual
-          </Text>
-        </Box>
+        <Flex w="full" justify="space-between" align="center">
+          <Box textAlign="center" flex={1}>
+            <Heading size="lg" color={colorMode === 'dark' ? 'blue.300' : 'blue.600'}>
+              VMware Assistance
+            </Heading>
+            <Text color={colorMode === 'dark' ? 'gray.400' : 'gray.600'}>
+              Diagnóstico inteligente de infraestructura virtual
+            </Text>
+          </Box>
+          <Flex gap={2}>
+            <IconButton
+              icon={colorMode === 'dark' ? <FaSun /> : <FaMoon />}
+              onClick={toggleColorMode}
+              aria-label="Cambiar tema"
+              colorScheme="blue"
+              variant="solid"
+              borderRadius="md"
+              size="lg"
+              bg="#2196f3"
+              _hover={{ bg: '#1976d2' }}
+              _active={{ bg: '#1565c0' }}
+              color="white"
+            />
+            <IconButton
+              icon={<FaRedo />}
+              onClick={handleResetChat}
+              aria-label="Reiniciar chat"
+              colorScheme="blue"
+              variant="solid"
+              borderRadius="md"
+              size="lg"
+              bg="#2196f3"
+              _hover={{ bg: '#1976d2' }}
+              _active={{ bg: '#1565c0' }}
+              color="white"
+            />
+          </Flex>
+        </Flex>
 
         <Box
           flex={1}
           w="full"
-          bg="white"
+          bg={colorMode === 'dark' ? '#232328' : 'white'}
           borderRadius="lg"
           boxShadow="md"
           overflow="hidden"
@@ -98,7 +139,7 @@ function App() {
                 width: '6px',
               },
               '&::-webkit-scrollbar-thumb': {
-                background: 'gray.200',
+                background: colorMode === 'dark' ? 'gray.600' : 'gray.200',
                 borderRadius: '24px',
               },
             }}
@@ -113,7 +154,7 @@ function App() {
               ))}
               {isLoading && (
                 <Flex justify="center" my={4}>
-                  <Spinner color="blue.500" />
+                  <Spinner color={colorMode === 'dark' ? 'blue.300' : 'blue.500'} />
                 </Flex>
               )}
               <div ref={messagesEndRef} />

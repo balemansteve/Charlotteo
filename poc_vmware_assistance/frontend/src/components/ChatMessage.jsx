@@ -19,8 +19,8 @@ const ChatMessage = ({ message, isUser }) => {
       >
         <Flex align="center" mb={2}>
           <Avatar
-            size="sm"
-            icon={isUser ? <FaUser /> : <FaRobot />}
+            size={isUser ? 'sm' : 'md'}
+            icon={isUser ? <FaUser /> : <FaRobot size={20} />}
             bg={isUser ? 'blue.600' : 'gray.400'}
             mr={2}
           />
