@@ -76,7 +76,7 @@ function App() {
   }
 
   return (
-    <Container maxW="container.xl" h="100vh" py={4}>
+    <Container maxW="container.xl" h="100vh" py={10}>
       <VStack h="full" spacing={4}>
         <Flex w="full" justify="space-between" align="center">
           <Box textAlign="center" flex={1}>

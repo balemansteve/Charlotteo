@@ -25,7 +25,7 @@ const ChatMessage = ({ message, isUser }) => {
             mr={2}
           />
           <Text fontSize="sm" fontWeight="bold">
-            {isUser ? 'Tú' : (message.name || 'VMware Assistance')}
+            {isUser ? 'Usuario' : (message.name || 'VMware Assistance')}
           </Text>
         </Flex>
         <Box>
