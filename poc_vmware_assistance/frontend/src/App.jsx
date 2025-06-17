@@ -44,7 +44,7 @@ function App() {
 
     try {
       // reemplazar la url con el endpoint de fastapi
-      const response = await axios.post('http://localhost:8000/chat', {
+      const response = await axios.post('http://localhost:8000/api/v1/prompt/', {
         message,
       })
 
