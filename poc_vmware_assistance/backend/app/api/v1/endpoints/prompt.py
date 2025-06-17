@@ -26,7 +26,7 @@ def handle_prompt(request: PromptRequest):
 
     # Si la respuesta es diccionario, hay una acción a ejecutar
     if isinstance(response, dict):
-        script = response.get("script") # Script a ejecutar cuando se conecte a Aria
+        #  script = response.get("script")  / Si es necesario script por linea de comandos
         action = response.get("action")
         vm_name = response.get("vm_name")
 
