@@ -19,9 +19,9 @@ class OpenAIClient:
         """
         load_dotenv()
         self.api_key = os.getenv("OPENAI_API_KEY")
-        # openai.api_key = self.api_key
+        # openai.api_key = self.api_key // SDK viejo
         self.client = openai.OpenAI(api_key=self.api_key)
-        self.model = "gpt-4o"  # Modelo por defecto, puede ser cambiado según sea necesario
+        self.model = "gpt-4o"  # Versión del modelo usado
 
     def send_prompt(self, prompt: str):
         """
@@ -42,7 +42,7 @@ class OpenAIClient:
 
         try:
             import json
-            return json.loads(result)
+            return json.loads(result)  # Intentar decodificar como JSON
         except json.JSONDecodeError:
             # Si no se puede decodificar como JSON, devolver el texto plano
             return result
