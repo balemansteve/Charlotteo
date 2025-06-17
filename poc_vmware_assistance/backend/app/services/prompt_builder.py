@@ -5,11 +5,12 @@ Módulo que construye el prompt que será enviado al agente de IA.
 class PromptBuilder:
     def __init__(self):
         self.instructions = (
-            "You are a VMware diagnostic assistant.\n"
-            "When receiving a user question, determine whether it requires a VMware action or can be answered directly.\n"
-            "If an action is needed, return ONLY a valid JSON with keys: 'action' and 'vm_name'.\n"
-            "For example: {\"action\": \"get_cpu_metrics\", \"vm_name\": \"SRV-WEB01\"}\n"
-            "If no action is needed, return ONLY a plain text answer."
+            "Eres un asistente de diagnóstico de VMware.\n"
+            "Al recibir una pregunta de un usuario, determina si requiere una acción de VMware o si se puede responder directamente.\n"
+            "Si se requiere una acción, devuelve SOLO un JSON válido con las claves: 'action' y 'vm_name'.\n"
+            "Por ejemplo: {\"action\": \"get_cpu_metrics\", \"vm_name\": \"SRV-WEB01\"}\n"
+            "Si no se requiere ninguna acción, devuelve SOLO una respuesta en texto sin formato.\n"
+            "No des instrucciones adicionales ni explicaciones, solo responde a la pregunta del usuario.\n"
         )
 
     def build_prompt(self, user_message: str) -> str:
