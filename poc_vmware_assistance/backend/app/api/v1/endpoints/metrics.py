@@ -1,13 +1,12 @@
 """
 Modulo que maneja el endpoint GET /metrics.
-Consulta de métricas de vSphere.
+Mock de prueba temporal.
 """
 
 from fastapi import APIRouter
 
 router = APIRouter()
 
-# Cuando conectemos la API de Aria, este endpoint hará la llamada HTTP real.
 @router.get("/{vm_name}")
 def get_cpu_metrics(vm_name: str):
     """
