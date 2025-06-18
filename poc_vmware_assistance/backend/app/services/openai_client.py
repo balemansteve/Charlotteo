@@ -5,8 +5,8 @@ y recibir respuestas.
 
 import openai
 import os
-from dotenv import load_dotenv
 import json
+from app.core.config import settings
 
 class OpenAIClient:
     """
@@ -17,8 +17,7 @@ class OpenAIClient:
         """
         Inicializa el cliente de OpenAI con la clave de API.
         """
-        load_dotenv()
-        self.api_key = os.getenv("OPENAI_API_KEY")
+        self.api_key = settings.OPENAI_API_KEY
         # openai.api_key = self.api_key // SDK viejo
         self.client = openai.OpenAI(api_key=self.api_key)
         self.model = "gpt-4o"  # Versión del modelo usado
