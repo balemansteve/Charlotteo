@@ -15,11 +15,11 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 app.include_router(prompt.router, prefix="/api/v1/prompt", tags=["Prompt"])
-#  app.include_router(metrics.router, prefix="/api/v1/metrics", tags=["Metrics"])
+app.include_router(metrics.router, prefix="/api/v1/metrics", tags=["Metrics"])
