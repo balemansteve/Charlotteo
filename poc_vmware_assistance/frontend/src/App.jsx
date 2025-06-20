@@ -49,6 +49,11 @@ function App() {
   const handleSendMessage = async (message) => {
     if (!message.trim()) return
 
+    if (!chatOpen) {
+      setChatOpen(true)
+      setFirstMessage(message)
+    }
+
     setMessages((prev) => [...prev, { text: message, isUser: true }])
     setIsLoading(true)
 
