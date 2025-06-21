@@ -10,8 +10,9 @@ import {
   Spinner,
   IconButton,
   useColorMode,
+  Button,
 } from '@chakra-ui/react'
-import { FaMoon, FaSun, FaRedo } from 'react-icons/fa'
+import { FaMoon, FaSun, FaSyncAlt } from 'react-icons/fa'
 import ChatMessage from './components/ChatMessage'
 import ChatInput from './components/ChatInput'
 import axios from 'axios'
@@ -86,20 +87,22 @@ function App() {
       {
         text: '¡Hola! Consulta aquí cualquier duda sobre tu infraestructura VMware.',
         isUser: false,
+        name: 'VMware Assistance',
       },
     ])
-    setChatOpen(false)
-    setFirstMessage("")
   }
 
-  const bgMain = colorMode === 'dark' ? '#18181A' : '#fff'
-  const bgInput = colorMode === 'dark' ? '#232328' : '#f5f5f5'
-  const textColor = colorMode === 'dark' ? 'white' : '#232328'
-  const subtitleColor = colorMode === 'dark' ? 'gray.400' : 'gray.600'
+  const bgMain =
+    colorMode === 'dark'
+      ? 'radial-gradient(circle at 50% 50%, #2d2d2d 0%, #1E1E1E 80%)'
+      : '#FFFFFF'
+  const bgInput = colorMode === 'dark' ? '#2d2d2d' : '#f5f5f5'
+  const textColor = colorMode === 'dark' ? '#FFFFFF' : '#1E1E1E'
+  const subtitleColor = colorMode === 'dark' ? '#e0e0e0' : '#606060'
 
   return (
-    <Box minH="100vh" minW="100vw" bg="#18181A" position="relative">
-      {/* INTERFAZ INICIAL: solo título, subtítulo e input centrados verticalmente, con animación */}
+    <Box minH="100vh" minW="100vw" bg={bgMain} position="relative">
+      {/* interfaz */}
       <AnimatePresence>
         {!chatOpen && (
           <motion.div
@@ -113,7 +116,7 @@ function App() {
             onAnimationComplete={() => setIsTransitioning(false)}
           >
             <Box minH="100vh" display="flex" flexDirection="column" alignItems="center" justifyContent="center" bg={bgMain}>
-              <Heading size="2xl" color="blue.300" letterSpacing="tight" mb={2}>
+              <Heading size="2xl" color="#2E8B57" letterSpacing="tight" mb={2}>
                 VMware Assistance
               </Heading>
               <Text color={subtitleColor} fontSize="xl" mb={8}>
@@ -139,43 +142,34 @@ function App() {
                   <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} placeholder="Escribe tu consulta..." showCounter={false} modernStyle={true} hideBox={true} inputBg={bgInput} fullWidthInput={true} inputColor={textColor} />
                 </Box>
               </motion.div>
-              {/* Botones arriba a la derecha SIEMPRE visibles */}
+              {/* botones */}
               <Box position="absolute" top={6} right={10} zIndex={20} display="flex" alignItems="center" gap={2}>
                 <IconButton
-                  icon={<FaRedo />}
+                  icon={<FaSyncAlt />}
                   onClick={handleResetChat}
                   aria-label="Reiniciar chat"
-                  colorScheme="blue"
-                  variant="solid"
-                  borderRadius="full"
+                  variant="ghost"
                   size="lg"
-                  bg="#2196f3"
-                  _hover={{ bg: '#1976d2' }}
-                  _active={{ bg: '#1565c0' }}
-                  color="white"
-                  boxShadow="0 2px 8px 0 rgba(0,0,0,0.10)"
-                  mt={-2}
+                  color={subtitleColor}
+                  _hover={{ color: textColor }}
+                  transition="transform 0.2s"
+                  _active={{ transform: 'scale(0.85) rotate(90deg)' }}
                 />
                 <IconButton
                   icon={colorMode === 'dark' ? <FaSun /> : <FaMoon />}
                   onClick={toggleColorMode}
                   aria-label="Cambiar tema"
-                  colorScheme="blue"
-                  variant="solid"
-                  borderRadius="full"
+                  variant="ghost"
                   size="lg"
-                  bg="#2196f3"
-                  _hover={{ bg: '#1976d2' }}
-                  _active={{ bg: '#1565c0' }}
-                  color="white"
-                  mt={-2}
+                  color={subtitleColor}
+                  _hover={{ color: textColor }}
                 />
               </Box>
             </Box>
           </motion.div>
         )}
       </AnimatePresence>
-      {/* INTERFAZ DE CHAT: header arriba, historial e input centrados, con transición suave */}
+      {/* interfaz de chat*/}
       <AnimatePresence>
         {chatOpen && (
           <motion.div
@@ -184,15 +178,15 @@ function App() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -40 }}
             transition={{ duration: 0.5, ease: 'easeInOut' }}
-            style={{ width: '100%', background: bgMain }}
+            style={{ width: '100%', background: 'transparent' }}
             onAnimationStart={() => setIsTransitioning(true)}
             onAnimationComplete={() => setIsTransitioning(false)}
           >
-            <Box minH="100vh" display="flex" flexDirection="column" alignItems="center" justifyContent="flex-start" bg={bgMain}>
-              {/* Header arriba */}
-              <Box w="100%" px={12} pt={8} pb={2} display="flex" alignItems="flex-start" justifyContent="space-between" bg={bgMain}>
+            <Box minH="100vh" display="flex" flexDirection="column" alignItems="center" justifyContent="flex-start" bg="transparent">
+              {/* header */}
+              <Box w="100%" px={12} pt={8} pb={2} display="flex" alignItems="flex-start" justifyContent="space-between" bg="transparent">
                 <Box>
-                  <Heading size="2xl" color="blue.300" letterSpacing="tight">
+                  <Heading size="2xl" color="#2E8B57" letterSpacing="tight">
                     VMware Assistance
                   </Heading>
                   <Text color={subtitleColor} fontSize="xl" mt={2}>
@@ -201,37 +195,28 @@ function App() {
                 </Box>
                 <Box display="flex" alignItems="center" gap={2}>
                   <IconButton
-                    icon={<FaRedo />}
+                    icon={<FaSyncAlt />}
                     onClick={handleResetChat}
                     aria-label="Reiniciar chat"
-                    colorScheme="blue"
-                    variant="solid"
-                    borderRadius="full"
+                    variant="ghost"
                     size="lg"
-                    bg="#2196f3"
-                    _hover={{ bg: '#1976d2' }}
-                    _active={{ bg: '#1565c0' }}
-                    color="white"
-                    boxShadow="0 2px 8px 0 rgba(0,0,0,0.10)"
-                    mt={-2}
+                    color={subtitleColor}
+                    _hover={{ color: textColor }}
+                    transition="transform 0.2s"
+                    _active={{ transform: 'scale(0.85) rotate(90deg)' }}
                   />
                   <IconButton
                     icon={colorMode === 'dark' ? <FaSun /> : <FaMoon />}
                     onClick={toggleColorMode}
                     aria-label="Cambiar tema"
-                    colorScheme="blue"
-                    variant="solid"
-                    borderRadius="full"
+                    variant="ghost"
                     size="lg"
-                    bg="#2196f3"
-                    _hover={{ bg: '#1976d2' }}
-                    _active={{ bg: '#1565c0' }}
-                    color="white"
-                    mt={-2}
+                    color={subtitleColor}
+                    _hover={{ color: textColor }}
                   />
                 </Box>
               </Box>
-              {/* Chat centrado */}
+              {/* chat */}
               <Box
                 w="100%"
                 maxW="800px"
@@ -242,7 +227,7 @@ function App() {
                 justifyContent="center"
                 alignItems="center"
                 pt={8}
-                bg={bgMain}
+                bg="transparent"
               >
                 <Box
                   w="100%"
@@ -253,7 +238,7 @@ function App() {
                       width: '6px',
                     },
                     '::-webkit-scrollbar-thumb': {
-                      background: colorMode === 'dark' ? '#232328' : '#bbb',
+                      background: colorMode === 'dark' ? '#454545' : '#a0a0a0',
                       borderRadius: '8px',
                     },
                     '::-webkit-scrollbar-track': {
@@ -265,13 +250,13 @@ function App() {
                     {messages.map((msg, index) => (
                       <ChatMessage
                         key={index}
-                        message={msg.text}
+                        message={msg}
                         isUser={msg.isUser}
                       />
                     ))}
                     {isLoading && (
                       <Flex justify="center" my={4}>
-                        <Spinner color="blue.300" />
+                        <Spinner color="#2E8B57" />
                       </Flex>
                     )}
                     <div ref={messagesEndRef} />

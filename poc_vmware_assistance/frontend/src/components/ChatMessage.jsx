@@ -1,41 +1,76 @@
-import { Box, Text, Flex, Avatar } from '@chakra-ui/react'
-import { FaUser, FaRobot } from 'react-icons/fa'
+import { Box, Text, Flex, Avatar, useColorMode, IconButton, useToast } from '@chakra-ui/react'
+import { FaRobot, FaCopy, FaEdit, FaSyncAlt } from 'react-icons/fa'
 
 const ChatMessage = ({ message, isUser }) => {
+  const { colorMode } = useColorMode()
+  const toast = useToast()
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(message.text)
+    toast({
+      title: 'Copiado',
+      description: 'El mensaje ha sido copiado al portapapeles.',
+      status: 'success',
+      duration: 2000,
+      isClosable: true,
+    })
+  }
+
+  if (isUser) {
+    return (
+      <Flex w="100%" justify="flex-end" mb={4} px={4}>
+        <Box maxW={{ base: '90%', md: '70%' }}>
+          <Box
+            bg="#2E8B57"
+            color="white"
+            p={3}
+            borderRadius="20px 20px 5px 20px"
+          >
+            <Text whiteSpace="pre-wrap" wordBreak="break-word">
+              {message.text}
+            </Text>
+          </Box>
+          <Flex justify="flex-end" mt={2} gap={1}>
+            <IconButton
+              size="xs"
+              variant="ghost"
+              icon={<FaCopy />}
+              aria-label="Copiar mensaje"
+              onClick={handleCopy}
+              _hover={{ color: 'primary.200' }}
+            />
+          </Flex>
+        </Box>
+      </Flex>
+    )
+  }
+
+  // bot message
   return (
-    <Flex
-      w="100%"
-      mb={4}
-      justify={isUser ? 'flex-end' : 'flex-start'}
-    >
-      <Flex
-        maxW="70%"
-        bg={isUser ? 'blue.500' : 'gray.100'}
-        color={isUser ? 'white' : 'black'}
-        p={3}
-        borderRadius="lg"
-        boxShadow="sm"
-        direction="column"
-      >
-        <Flex align="center" mb={2}>
-          <Avatar
-            size={isUser ? 'sm' : 'md'}
-            icon={isUser ? <FaUser /> : <FaRobot size={20} />}
-            bg={isUser ? 'blue.600' : 'gray.400'}
-            mr={2}
-          />
-          <Text fontSize="sm" fontWeight="bold">
-            {isUser ? 'Usuario' : (message.name || 'VMware Assistance')}
+    <Flex w="100%" justify="flex-start" mb={4} px={4}>
+      <Flex align="flex-start">
+        <Avatar size="sm" icon={<FaRobot size={20} />} bg="accent.200" mr={3} />
+        <Box maxW={{ base: '90%', md: '70%' }}>
+          <Text fontWeight="bold" mb={2} color={colorMode === 'dark' ? 'text.200' : 'gray.700'}>
+            {message.name || 'VMware Assistance'}
           </Text>
-        </Flex>
-        <Box>
-          <Text 
-            fontSize="md" 
+          <Text
             whiteSpace="pre-wrap"
             wordBreak="break-word"
+            color={colorMode === 'dark' ? 'text.100' : 'gray.800'}
           >
-            {message}
+            {message.text}
           </Text>
+          <Flex justify="flex-start" mt={2} gap={1}>
+            <IconButton
+              size="xs"
+              variant="ghost"
+              icon={<FaCopy />}
+              aria-label="Copiar mensaje"
+              onClick={handleCopy}
+              _hover={{ color: 'primary.200' }}
+            />
+          </Flex>
         </Box>
       </Flex>
     </Flex>

@@ -14,3 +14,44 @@ body {
   min-width: 320px;
   min-height: 100vh;
 }
+
+
+:root {
+  --primary-100: #2E8B57;
+  --primary-200: #61bc84;
+  --primary-300: #c6ffe6;
+  --accent-100: #8FBC8F;
+  --accent-200: #345e37;
+  --text-100: #FFFFFF;
+  --text-200: #e0e0e0;
+  --bg-100: #1E1E1E;
+  --bg-200: #2d2d2d;
+  --bg-300: #454545;
+}
+
+
+.text-primary-100 { color: var(--primary-100); }
+.text-primary-200 { color: var(--primary-200); }
+.text-primary-300 { color: var(--primary-300); }
+.text-accent-100 { color: var(--accent-100); }
+.text-accent-200 { color: var(--accent-200); }
+.text-text-100 { color: var(--text-100); }
+.text-text-200 { color: var(--text-200); }
+
+.bg-primary-100 { background-color: var(--primary-100); }
+.bg-primary-200 { background-color: var(--primary-200); }
+.bg-primary-300 { background-color: var(--primary-300); }
+.bg-accent-100 { background-color: var(--accent-100); }
+.bg-accent-200 { background-color: var(--accent-200); }
+.bg-bg-100 { background-color: var(--bg-100); }
+.bg-bg-200 { background-color: var(--bg-200); }
+.bg-bg-300 { background-color: var(--bg-300); }
+
+.border-primary-100 { border-color: var(--primary-100); }
+.border-primary-200 { border-color: var(--primary-200); }
+.border-primary-300 { border-color: var(--primary-300); }
+.border-accent-100 { border-color: var(--accent-100); }
+.border-accent-200 { border-color: var(--accent-200); }
+.border-bg-100 { border-color: var(--bg-100); }
+.border-bg-200 { border-color: var(--bg-200); }
+.border-bg-300 { border-color: var(--bg-300); }
