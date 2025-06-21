@@ -116,7 +116,7 @@ function App() {
             onAnimationComplete={() => setIsTransitioning(false)}
           >
             <Box minH="100vh" display="flex" flexDirection="column" alignItems="center" justifyContent="center" bg={bgMain}>
-              <Heading size="2xl" color="#2E8B57" letterSpacing="tight" mb={2}>
+              <Heading size="2xl" color="#2E8B57" letterSpacing="tight" mb={2} className="app-title">
                 VMware Assistance
               </Heading>
               <Text color={subtitleColor} fontSize="xl" mb={8}>
@@ -184,16 +184,16 @@ function App() {
           >
             <Box minH="100vh" display="flex" flexDirection="column" alignItems="center" justifyContent="flex-start" bg="transparent">
               {/* header */}
-              <Box w="100%" px={12} pt={8} pb={2} display="flex" alignItems="flex-start" justifyContent="space-between" bg="transparent">
-                <Box>
-                  <Heading size="2xl" color="#2E8B57" letterSpacing="tight">
+              <Box w="100%" px={12} pt={8} pb={2} position="relative" bg="transparent">
+                <Box textAlign="center">
+                  <Heading size="2xl" color="#2E8B57" letterSpacing="tight" className="app-title">
                     VMware Assistance
                   </Heading>
                   <Text color={subtitleColor} fontSize="xl" mt={2}>
                     Diagnóstico inteligente de infraestructura virtual
                   </Text>
                 </Box>
-                <Box display="flex" alignItems="center" gap={2}>
+                <Box position="absolute" top={8} right={12} display="flex" alignItems="center" gap={2}>
                   <IconButton
                     icon={<FaSyncAlt />}
                     onClick={handleResetChat}
