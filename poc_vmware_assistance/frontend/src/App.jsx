@@ -143,7 +143,7 @@ function App() {
                 </Box>
               </motion.div>
               {/* botones */}
-              <Box position="absolute" top={6} right={10} zIndex={20} display="flex" alignItems="center" gap={2}>
+              <Box position="absolute" top={8} right={12} zIndex={20} display="flex" alignItems="center" gap={2}>
                 <IconButton
                   icon={<FaSyncAlt />}
                   onClick={handleResetChat}
