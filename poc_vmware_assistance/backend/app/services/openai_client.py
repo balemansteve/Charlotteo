@@ -46,11 +46,26 @@ class OpenAIClient:
             # Si no se puede decodificar como JSON, devolver el texto plano
             return result
 
-    def summarize_response(self, technical_output: str):
-        """
-        Resume la respuesta técnica para que sea más comprensible.
+    # def summarize_response(self, technical_output: str):
+    #     """
+    #     Resume la respuesta técnica para que sea más comprensible.
 
-        :param technical_output: La salida técnica a resumir.
-        :return: Resumen de la salida técnica.
+    #     :param technical_output: La salida técnica a resumir.
+    #     :return: Resumen de la salida técnica.
+    #     """
+    #     return f"technical result interpreted: {technical_output}"
+
+    def summarize_response(self, technical_output):
         """
-        return f"technical result interpreted: {technical_output}"
+        Envía la respuesta técnica a OpenAI para obtener una explicación
+        amigable para el usuario final.
+        """
+        prompt = (
+        "Eres un asistente de VMware para usuarios no técnicos. "
+        "Explica brevemente y solo lo relevante sobre el siguiente resultado técnico:\n"
+        f"{technical_output}\n"
+        "No menciones detalles internos como resource_id si no son necesarios. "
+        "Enfócate solo en el significado práctico y da una recomendación si corresponde. "
+        "La respuesta debe ser clara, directa y de máximo 3 frases."
+        )
+        return self.send_prompt(prompt)
