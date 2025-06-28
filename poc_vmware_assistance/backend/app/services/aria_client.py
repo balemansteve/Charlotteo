@@ -1,3 +1,8 @@
+"""
+Módulo que define la clase AriaClient, encargada
+de interactuar con la API de Aria Operations.
+"""
+
 class AriaClient:
     """
     Clase para interactuar con la API de Aria Operations.
