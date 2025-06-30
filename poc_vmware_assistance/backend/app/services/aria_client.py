@@ -3,10 +3,21 @@ Módulo que define la clase AriaClient, encargada
 de interactuar con la API de Aria Operations.
 """
 
+import requests
+from app.core.config import settings
+
 class AriaClient:
     """
     Clase para interactuar con la API de Aria Operations.
     """
+    def __init__(self):
+        self.base_url = settings.ARIA_API_URL
+        self.session = requests.Session()
+        self.session.auth = (settings.ARIA_API_USER, settings.ARIA_API_PASSWORD)
+        self.session.headers.update({
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        })
 
     def get_top_vms_by_metric(self, metric: str, limit: int, time_range: str = "last_1h"):
         # TODO: Implementar la lógica para consultar la API de Aria Operations (o un mock)
