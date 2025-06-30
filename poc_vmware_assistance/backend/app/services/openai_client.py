@@ -29,10 +29,23 @@ class OpenAIClient:
         """
         Envía un prompt a la API de OpenAI y devuelve la respuesta.
 
-        :param prompt: El texto del prompt a enviar.
-        :return: Respuesta de la API de OpenAI.
+        :param user_message: El texto del usuario a enviar.
+        :return: Respuesta procesada.
         """
-        messages = [{"role": "user", "content": self.prompt_builder.build_prompt(user_message)}]
+        messages = [
+            {
+                "role": "system",
+                "content": (
+                    "Eres un asistente de VMware especializado en diagnosticar problemas. "
+                    "Tu tarea es automatizar acciones usando function calling siempre que sea posible. "
+                    "Nunca respondas directamente si hay una función disponible para resolver el problema."
+                    )
+            },
+            {
+                "role": "user",
+                "content": self.prompt_builder.build_prompt(user_message)
+            }
+        ]
 
         response = openai.ChatCompletion.create(
             model=self.model,
@@ -44,6 +57,7 @@ class OpenAIClient:
 
         message = response["choices"][0]["message"]
 
+        # Si hay una llamada a función, extraer el nombre y argumentos
         if message.get("function_call"):
             function_name = message["function_call"]["name"]
             arguments = json.loads(message["function_call"]["arguments"])
@@ -59,6 +73,7 @@ class OpenAIClient:
                 "content": json.dumps(function_result)
             })
 
+            # Segunda llamada a OpenAI con resultado técnico para resumen
             followup = openai.ChatCompletion.create(
                 model=self.model,
                 messages=messages,
@@ -69,4 +84,3 @@ class OpenAIClient:
 
         else:
             return message["content"]
-
