@@ -15,12 +15,12 @@ THRESHOLDS = {
 
 def calcular_severidad(metric_key, valor):
     """
-    Devuelve 'normal', 'warning' o 'critical' según el valor y los umbrales definidos.
+    Devuelve 'healthy', 'warning' o 'critical' según el valor y los umbrales definidos.
     """
     try:
         thresholds = THRESHOLDS[metric_key]
         if thresholds["healthy"][0] <= valor <= thresholds["healthy"][1]:
-            return "normal"
+            return "healthy"
         elif thresholds["warning"][0] <= valor <= thresholds["warning"][1]:
             return "warning"
         elif thresholds["critical"][0] <= valor:
