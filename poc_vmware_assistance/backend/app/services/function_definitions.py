@@ -1,5 +1,5 @@
 functions = [
-    {
+        {
         "name": "get_top_vms_by_metric",
         "description": "Devuelve las N VMs con el mayor valor de una métrica específica en un rango de tiempo.",
         "parameters": {
@@ -7,8 +7,15 @@ functions = [
             "properties": {
                 "metric": {
                     "type": "string",
-                    "enum": ["cpu_usage", "memory_usage", "disk_read", "network_usage", "cpu_ready", "memory_active"],
-                    "description": "Tipo de métrica a analizar."
+                    "enum": [
+                        "cpu_usage", "cpu|usage_average",
+                        "memory_usage", "mem|usage_average",
+                        "disk_read", "disk|read_average",
+                        "network_usage", "net|usage_average",
+                        "cpu_ready", "cpu|ready_summation",
+                        "memory_active", "mem|active_average"
+                    ],
+                    "description": "Tipo de métrica a analizar (ej: uso de CPU, memoria, disco o red)."
                 },
                 "limit": {
                     "type": "integer",
@@ -30,8 +37,15 @@ functions = [
             "properties": {
                 "metric": {
                     "type": "string",
-                    "enum": ["cpu_usage", "memory_usage", "cpu_ready", "memory_active", "disk_read", "network_usage"],
-                    "description": "Métrica a evaluar."
+                    "enum": [
+                        "cpu_usage", "cpu|usage_average",
+                        "memory_usage", "mem|usage_average",
+                        "cpu_ready", "cpu|ready_summation",
+                        "memory_active", "mem|active_average",
+                        "disk_read", "disk|read_average",
+                        "network_usage", "net|usage_average"
+                    ],
+                    "description": "Métrica a evaluar (ej: uso de CPU, memoria, etc.)."
                 },
                 "operator": {
                     "type": "string",
