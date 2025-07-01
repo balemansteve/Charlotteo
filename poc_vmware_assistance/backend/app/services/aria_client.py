@@ -58,7 +58,7 @@ class AriaClient:
         }
 
         try:
-            response = self.session.post(url, json=payload)
+            response = self.session.post(url, json=payload, verify=False)
             response.raise_for_status()
             result = response.json()
 
@@ -129,7 +129,7 @@ class AriaClient:
         }
 
         try:
-            response = self.session.get(url, params=params)
+            response = self.session.get(url, params=params, verify=False)
             response.raise_for_status()
 
             resources = response.json().get("resourceList", [])
