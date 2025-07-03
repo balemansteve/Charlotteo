@@ -127,15 +127,54 @@ class AriaClient:
 
     def get_vms_with_snapshots_older_than(self, days: int):
         """
-        Devuelve las VMs que tienen snapshots activos más antiguos que una cantidad específica de días.
-        Aún no se puede implementar porque no tenemos autorización para acceder a los endpoints de snapshots.
+        Consulta VMs que tienen snapshots activos más antiguos que cierta cantidad de días.
         """
-        # TODO: Implementar la lógica para obtener las VMs que tengan snapshots activos 
-        # más antiguos que una cantidad específica de días
-        return {
-            "status": "success",
-            "data": f"VMs with snapshots older than {days} days"
-        }
+
+        try:
+            # 1. Obtener todos los IDs de VMs
+            resource_ids = self.get_vm_resource_ids()
+            if not resource_ids:
+                return {
+                    "status": "error",
+                    "message": "No VM resource IDs found"
+                }
+
+            # 2. Definir payload para consultar la propiedad de edad del snapshot
+            url = f"{self.base_url}/suite-api/api/resources/properties/latest/query"
+            payload = {
+                "resourceIds": resource_ids,
+                "propertyKeys": ["snapshot|age"]
+            }
+
+            response = self.session.post(url, json=payload, verify=False)
+            response.raise_for_status()
+            data = response.json()
+
+            # 3. Filtrar VMs cuyo snapshot sea mayor al umbral
+            result = []
+            for item in data.get("propertyValues", []):
+                resource_id = item["resourceId"]
+                properties = item.get("propertyValues", [])
+                for prop in properties:
+                    if prop["propertyKey"] == "snapshot|age":
+                        try:
+                            age_days = int(prop["statKey"]["key"] or 0)
+                            if age_days > days:
+                                name = self.get_vm_name_by_id(resource_id)
+                                result.append(name or resource_id)
+                        except (KeyError, ValueError, TypeError):
+                            continue
+
+            return {
+                "status": "success",
+                "data": result
+            }
+
+        except requests.exceptions.RequestException as e:
+            return {
+                "status": "error",
+                "message": f"Aria API error: {str(e)}"
+            }
 
     def get_idle_vms(self, cpu_threshold: float = 20, memory_threshold: float = 20, duration_days: int = 7):
         """
