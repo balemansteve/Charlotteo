@@ -129,6 +129,8 @@ class AriaClient:
         """
         Consulta VMs que tienen snapshots activos más antiguos que cierta cantidad de días.
         """
+        # TODO: Confirmar si "snapshot|age" es la key correcta para identificar la antigüedad del snapshot
+        # según la configuración real de Aria Operations. Se debe ajustar si es necesario al obtener permisos. 
 
         try:
             # 1. Obtener todos los IDs de VMs
