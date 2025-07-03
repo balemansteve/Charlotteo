@@ -1,5 +1,5 @@
 import { Input, IconButton, Flex, Text, useColorMode } from '@chakra-ui/react'
-import { FaPaperPlane } from 'react-icons/fa'
+import { FaArrowRight } from 'react-icons/fa'
 import { useState } from 'react'
 
 const MAX_CHARS = 300
@@ -65,7 +65,7 @@ const ChatInput = ({ onSendMessage, isLoading, placeholder = "Escribe tu consult
             type="submit"
             colorScheme={hideBox || fullWidthInput ? undefined : modernStyle ? undefined : 'primary'}
             aria-label="Enviar mensaje"
-            icon={<FaPaperPlane />}
+            icon={<FaArrowRight  />}
             isLoading={isLoading}
             isDisabled={isLoading || !message.trim() || message.length > MAX_CHARS}
             bg={hideBox || fullWidthInput ? 'transparent' : modernStyle ? '#2E8B57' : '#2E8B57'}
