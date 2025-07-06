@@ -25,19 +25,26 @@ class AriaClient:
         auth_url = f"{self.base_url}/suite-api/api/auth/token/acquire"
         payload = {
             "username": settings.ARIA_API_USER,
-            "authSource": "LOCAL",  # Ajustar si cambia el origen (LDAP, etc.)
+            "authSource": "LOCAL",
             "password": settings.ARIA_API_PASSWORD
         }
 
         try:
             response = self.session.post(auth_url, json=payload, verify=False)
-            response.raise_for_status()
-            self.token = response.json().get("token")
+
+            if response.status_code != 200:
+                raise RuntimeError(
+                    f"Auth failed with status {response.status_code}: {response.text}"
+                )
+
+            try:
+                self.token = response.json().get("token")
+            except Exception as e:
+                raise RuntimeError(f"Failed to decode JSON from auth response: {response.text}")
 
             if not self.token:
                 raise ValueError("No token received from Aria Operations")
 
-            # Establecer token en headers
             self.session.headers.update({
                 "Authorization": f"vRealizeOpsToken {self.token}",
                 "Accept": "application/json",
@@ -45,7 +52,7 @@ class AriaClient:
             })
 
         except requests.RequestException as e:
-            raise RuntimeError(f"Authentication failed: {str(e)}")
+            raise RuntimeError(f"Authentication request failed: {str(e)}")
 
     def request(self, method: str, endpoint: str, **kwargs):
         """
