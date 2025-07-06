@@ -1,0 +1,8 @@
+{
+  "cpu_usage": "cpu|usage_average",
+  "cpu_demand": "cpu|demand_average",
+  "cpu_ready": "cpu|ready_summation",
+  "memory_usage": "mem|usage_average",
+  "disk_usage": "diskspace|usage",
+  "network_traffic": "net|usage_average"
+}

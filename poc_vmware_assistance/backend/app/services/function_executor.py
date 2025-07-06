@@ -3,6 +3,8 @@ Módulo que ejecuta funciones específicas basadas en el nombre y los argumentos
 recibidos desde OpenAI mediante function calling.
 """
 
+import json
+from pathlib import Path
 from app.services.aria_client import AriaClient
 
 class FunctionExecutor:
@@ -15,10 +17,23 @@ class FunctionExecutor:
     def __init__(self):
         self.aria_client = AriaClient()
 
+        #  Cargamos aliases desde archivo JSON
+        alias_path = Path(__file__).parent.parent / "resources" / "metrics_aliases.json"
+        with open(alias_path, "r") as f:
+            self.metric_aliases = json.load(f)
+
     def execute(self, function_name: str, arguments: dict):
         """
         Ejecuta la función correspondiente según el nombre recibido y los argumentos provistos.
         """
+        # Si el argumento tiene "metric", lo reemplazamos si hay alias
+        if "metric" in arguments:
+            metric = arguments["metric"]
+            # Aplicamos alias si existe (con tolerancia a errores)
+            key = metric.lower().replace(" ", "_")
+            if key in self.metric_aliases:
+                arguments["metric"] = self.metric_aliases[key]
+
         if function_name == "get_top_vms_by_metric":
             # Llama a la función para obtener las VMs con mayor valor en una métrica
             return self.aria_client.get_top_vms_by_metric(
