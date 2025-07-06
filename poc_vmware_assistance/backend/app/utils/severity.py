@@ -29,3 +29,18 @@ def calcular_severidad(metric_key, valor):
         # Si la métrica no está definida, devuelve 'info'
         return "info"
     return "info"
+
+def get_severity_emoji(value: float) -> str:
+    """
+    Devuelve un emoji de severidad según el valor numérico.
+    Umbrales usados (por ahora comunes para CPU, RAM, etc.):
+    0 a 70   🟢 saludable
+    71 a 85  🟡 advertencia
+    86+    🔴 crítico
+    """
+    if value <= 70:
+        return "🟢"
+    elif value <= 85:
+        return "🟡"
+    else:
+        return "🔴"
