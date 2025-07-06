@@ -19,43 +19,55 @@ class AriaClient:
         self.authenticate()
 
     def authenticate(self):
-            """
-            Autenticación por token en Aria Operations.
-            """
-            auth_url = f"{self.base_url}/suite-api/api/auth/token/acquire"
-            payload = {
-                "username": settings.ARIA_API_USER,
-                "authSource": "LOCAL",  # Ajustar si cambia el origen (LDAP, etc.)
-                "password": settings.ARIA_API_PASSWORD
-            }
+        """
+        Autenticación por token en Aria Operations.
+        """
+        auth_url = f"{self.base_url}/suite-api/api/auth/token/acquire"
+        payload = {
+            "username": settings.ARIA_API_USER,
+            "authSource": "LOCAL",  # Ajustar si cambia el origen (LDAP, etc.)
+            "password": settings.ARIA_API_PASSWORD
+        }
 
-            try:
-                response = self.session.post(auth_url, json=payload, verify=False)
-                response.raise_for_status()
-                self.token = response.json().get("token")
+        try:
+            response = self.session.post(auth_url, json=payload, verify=False)
+            response.raise_for_status()
+            self.token = response.json().get("token")
 
-                if not self.token:
-                    raise ValueError("No token received from Aria Operations")
+            if not self.token:
+                raise ValueError("No token received from Aria Operations")
 
-                # Establecer token en headers
-                self.session.headers.update({
-                    "Authorization": f"vRealizeOpsToken {self.token}",
-                    "Accept": "application/json",
-                    "Content-Type": "application/json"
-                })
+            # Establecer token en headers
+            self.session.headers.update({
+                "Authorization": f"vRealizeOpsToken {self.token}",
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            })
 
-            except requests.RequestException as e:
-                raise RuntimeError(f"Authentication failed: {str(e)}")
+        except requests.RequestException as e:
+            raise RuntimeError(f"Authentication failed: {str(e)}")
+
+    def request(self, method: str, endpoint: str, **kwargs):
+        """
+        Wrapper para manejar expiración de token. Intenta una vez, y reintenta tras reautenticación si da 401.
+        """
+        url = f"{self.base_url}{endpoint}"
+        try:
+            response = self.session.request(method, url, verify=False, **kwargs)
+            if response.status_code == 401:
+                self.authenticate()
+                response = self.session.request(method, url, verify=False, **kwargs)
+
+            response.raise_for_status()
+            return response
+
+        except requests.RequestException as e:
+            raise RuntimeError(f"Request to {endpoint} failed: {str(e)}")
 
     def get_top_vms_by_metric(self, metric: str, limit: int, time_range: str = "last_1h"):
-        """
-        Devuelve las N VMs con mayor valor de una métrica específica en un rango de tiempo.
-        """
         resource_ids = self.get_vm_resource_ids()
         if not resource_ids:
             return {"status": "error", "message": "No se pudieron obtener resourceIds de las VMs."}
-
-        url = f"{self.base_url}/suite-api/api/resources/stats/latest"
 
         payload = {
             "statKeys": [metric],
@@ -63,8 +75,7 @@ class AriaClient:
         }
 
         try:
-            response = self.session.post(url, json=payload, verify=False)
-            response.raise_for_status()
+            response = self.request("POST", "/suite-api/api/resources/stats/latest", json=payload)
             data = response.json()
 
             vm_metrics = []
@@ -83,30 +94,19 @@ class AriaClient:
         except requests.exceptions.RequestException as e:
             return {"status": "error", "message": f"Aria API error: {str(e)}"}
 
-        except requests.exceptions.RequestException as e:
-            return {"status": "error", "message": f"Aria API error: {str(e)}"}
-
     def get_vms_with_metric_threshold(self, metric: str, operator: str, value: float, time_range: str = "last_1h"):
-        """
-        Consulta real a la API de Aria Operations para obtener métricas de VMs y filtrar por umbral.
-        """
-        # Primero obtener todos los resource IDs de VMs con la funcion auxiliar get_vm_resource_ids
         vms = self.get_vm_resource_ids()
         if isinstance(vms, dict) and vms.get("status") == "error":
-            return vms  # si falló, devolvemos el error directamente
+            return vms
 
         vm_ids = [vm["id"] for vm in vms]
 
-        url = f"{self.base_url}/suite-api/api/resources/stats/query"
-
-        # Mapear tiempo legible a formato Aria (esto puede ajustarse)
         time_range_map = {
             "last_1h": "-60min",
             "last_3d": "-3d"
         }
         start_time = time_range_map.get(time_range, "-60min")
 
-        # Segundo construir el payload con resource IDs y stat keys
         payload = {
             "resourceIds": vm_ids,
             "statKey": [metric],
@@ -117,13 +117,10 @@ class AriaClient:
         }
 
         try:
-            response = self.session.post(url, json=payload, verify=False)
-            response.raise_for_status()
+            response = self.request("POST", "/suite-api/api/resources/stats/query", json=payload)
             result = response.json()
 
-            # Tercero filtrar las VMs según el operador y valor
             matching_vms = []
-
             for stat_entry in result.get("values", []):
                 resource_id = stat_entry.get("resourceId")
                 stat_values = stat_entry.get("stat-list", {}).get("stat", [])
@@ -133,52 +130,31 @@ class AriaClient:
                     if samples:
                         metric_value = samples[0]
                         if self._compare(metric_value, operator, value):
-                            # Buscar nombre legible por ID
                             vm_name = next((vm["name"] for vm in vms if vm["id"] == resource_id), resource_id)
                             matching_vms.append({
                                 "name": vm_name,
                                 "value": metric_value
                             })
 
-            return {
-                "status": "success",
-                "filtered_vms": matching_vms
-            }
+            return {"status": "success", "filtered_vms": matching_vms}
 
         except requests.exceptions.RequestException as e:
-            return {
-                "status": "error",
-                "message": f"Aria API error: {str(e)}"
-            }
+            return {"status": "error", "message": f"Aria API error: {str(e)}"}
 
     def get_vms_with_snapshots_older_than(self, days: int):
-        """
-        Consulta VMs que tienen snapshots activos más antiguos que cierta cantidad de días.
-        """
-        # TODO: Confirmar si "snapshot|age" es la key correcta para identificar la antigüedad del snapshot
-        # según la configuración real de Aria Operations. Se debe ajustar si es necesario al obtener permisos. 
-
         try:
-            # 1. Obtener todos los IDs de VMs
             resource_ids = self.get_vm_resource_ids()
             if not resource_ids:
-                return {
-                    "status": "error",
-                    "message": "No VM resource IDs found"
-                }
+                return {"status": "error", "message": "No VM resource IDs found"}
 
-            # 2. Definir payload para consultar la propiedad de edad del snapshot
-            url = f"{self.base_url}/suite-api/api/resources/properties/latest/query"
             payload = {
                 "resourceIds": resource_ids,
                 "propertyKeys": ["snapshot|age"]
             }
 
-            response = self.session.post(url, json=payload, verify=False)
-            response.raise_for_status()
+            response = self.request("POST", "/suite-api/api/resources/properties/latest/query", json=payload)
             data = response.json()
 
-            # 3. Filtrar VMs cuyo snapshot sea mayor al umbral
             result = []
             for item in data.get("propertyValues", []):
                 resource_id = item["resourceId"]
@@ -193,28 +169,16 @@ class AriaClient:
                         except (KeyError, ValueError, TypeError):
                             continue
 
-            return {
-                "status": "success",
-                "data": result
-            }
+            return {"status": "success", "data": result}
 
         except requests.exceptions.RequestException as e:
-            return {
-                "status": "error",
-                "message": f"Aria API error: {str(e)}"
-            }
+            return {"status": "error", "message": f"Aria API error: {str(e)}"}
 
     def get_idle_vms(self, cpu_threshold: float = 20, memory_threshold: float = 20, duration_days: int = 7):
-        """
-        Devuelve VMs con bajo uso de CPU y memoria sostenido durante una cantidad de días.
-        """
         resource_ids = self.get_vm_resource_ids()
         if not resource_ids:
             return {"status": "error", "message": "No se pudieron obtener resourceIds de las VMs."}
 
-        url = f"{self.base_url}/suite-api/api/resources/stats/query"
-
-        # Tiempo en milisegundos desde hace 'n' días hasta ahora
         end_time = int(time.time() * 1000)
         start_time = end_time - (duration_days * 24 * 60 * 60 * 1000)
 
@@ -228,26 +192,21 @@ class AriaClient:
         }
 
         try:
-            response = self.session.post(url, json=payload, verify=False)
-            response.raise_for_status()
+            response = self.request("POST", "/suite-api/api/resources/stats/query", json=payload)
             data = response.json()
 
             idle_vms = {}
-
             for stat_entry in data.get("values", []):
                 resource_id = stat_entry.get("resourceId")
                 stats = stat_entry.get("stat-list", {}).get("stat", [])
                 for stat in stats:
                     key = stat.get("statKey")
                     avg_values = stat.get("data", [])
-
                     if not avg_values:
                         continue
-
                     avg_usage = sum(avg_values) / len(avg_values)
                     if resource_id not in idle_vms:
                         idle_vms[resource_id] = {}
-
                     idle_vms[resource_id][key] = avg_usage
 
             result = []
@@ -268,21 +227,13 @@ class AriaClient:
             return {"status": "error", "message": f"Aria API error: {str(e)}"}
 
     def get_host_metric_info(self, metric: str, operator: str = None, value: float = None, time_range: str = "last_1h"):
-        """
-        Consulta una métrica específica de hosts, con filtros opcionales.
-        """
-        url = f"{self.base_url}/suite-api/api/resources/stats/query"
-
-        # 1. Obtener resourceIds de hosts
         try:
-            response = self.session.get(f"{self.base_url}/suite-api/api/resources?resourceKind=HostSystem", verify=False)
-            response.raise_for_status()
+            response = self.request("GET", "/suite-api/api/resources", params={"resourceKind": "HostSystem"})
             hosts = response.json().get("resourceList", [])
             resource_ids = [host["identifier"] for host in hosts]
         except Exception as e:
             return {"status": "error", "message": f"No se pudieron obtener hosts: {str(e)}"}
 
-        # 2. Calcular rango de tiempo
         time_map = {"last_1h": 1, "last_3d": 3 * 24}
         hours = time_map.get(time_range, 1)
         end_time = int(time.time() * 1000)
@@ -298,13 +249,11 @@ class AriaClient:
         }
 
         try:
-            stats_response = self.session.post(url, json=payload, verify=False)
-            stats_response.raise_for_status()
+            stats_response = self.request("POST", "/suite-api/api/resources/stats/query", json=payload)
             stats_data = stats_response.json()
         except Exception as e:
             return {"status": "error", "message": f"Error al obtener estadísticas: {str(e)}"}
 
-        # 3. Procesar y filtrar
         result = []
         for stat in stats_data.get("values", []):
             rid = stat.get("resourceId")
@@ -329,30 +278,14 @@ class AriaClient:
 
         return {"status": "success", "data": result}
 
-    #  METODOS AUXILIARES
     def get_vm_resource_ids(self):
-        """
-        Consulta la API de Aria Operations para obtener los resource IDs de todas las VMs.
-        """
-        url = f"{self.base_url}/suite-api/api/resources"
-
-        # Filtros para obtener solo recursos del tipo VirtualMachine
-        params = {
-            "resourceKind": "VirtualMachine"
-        }
-
+        params = {"resourceKind": "VirtualMachine"}
         try:
-            response = self.session.get(url, params=params, verify=False)
-            response.raise_for_status()
-
+            response = self.request("GET", "/suite-api/api/resources", params=params)
             resources = response.json().get("resourceList", [])
 
-            # Extraemos ID y nombre de cada VM
             vm_resources = [
-                {
-                    "id": res.get("identifier"),
-                    "name": res.get("resourceKey", {}).get("name")
-                }
+                {"id": res.get("identifier"), "name": res.get("resourceKey", {}).get("name")}
                 for res in resources
                 if res.get("resourceKey", {}).get("name") is not None
             ]
@@ -360,10 +293,7 @@ class AriaClient:
             return vm_resources
 
         except requests.exceptions.RequestException as e:
-            return {
-                "status": "error",
-                "message": f"Error getting VM resource IDs: {str(e)}"
-            }
+            return {"status": "error", "message": f"Error getting VM resource IDs: {str(e)}"}
 
     def _compare(self, a: float, operator: str, b: float) -> bool:
         if operator == ">": return a > b
@@ -373,16 +303,9 @@ class AriaClient:
         return False
 
     def get_vm_name_by_id(self, resource_id: str):
-        """
-        Devuelve el nombre legible de una VM dado su resourceId.
-        """
-        url = f"{self.base_url}/suite-api/api/resources/{resource_id}"
-
         try:
-            response = self.session.get(url, verify=False)
-            response.raise_for_status()
+            response = self.request("GET", f"/suite-api/api/resources/{resource_id}")
             data = response.json()
             return data.get("resourceKey", {}).get("name", resource_id)
-
         except requests.exceptions.RequestException:
             return f"VM ({resource_id})"
