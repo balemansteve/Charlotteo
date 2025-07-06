@@ -6,6 +6,7 @@ consumir sus endpoints.
 
 import requests
 import time
+import xml.etree.ElementTree as ET
 from app.core.config import settings
 
 class AriaClient:
@@ -38,9 +39,11 @@ class AriaClient:
                 )
 
             try:
-                self.token = response.json().get("token")
+                root = ET.fromstring(response.text)
+                ns = {"ops": "http://webservice.vmware.com/vRealizeOpsMgr/1.0/"}
+                self.token = root.findtext("ops:token", namespaces=ns)
             except Exception as e:
-                raise RuntimeError(f"Failed to decode JSON from auth response: {response.text}")
+                raise RuntimeError(f"Failed to parse XML token: {str(e)}")
 
             if not self.token:
                 raise ValueError("No token received from Aria Operations")
