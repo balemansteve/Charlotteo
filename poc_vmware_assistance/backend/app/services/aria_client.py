@@ -8,6 +8,7 @@ import requests
 import time
 import xml.etree.ElementTree as ET
 from app.core.config import settings
+from app.utils.severity import get_severity_emoji
 
 class AriaClient:
     """
@@ -279,12 +280,10 @@ class AriaClient:
                 if not self._compare(avg, operator, value):
                     continue
 
+            emoji = get_severity_emoji(avg)
             host_name = self.get_vm_name_by_id(rid)
-            result.append({
-                "host_name": host_name,
-                "average": avg,
-                "metric": metric
-            })
+            formatted = f"{host_name} - {emoji} {avg:.2f}%"
+            result.append(formatted)
 
         return {"status": "success", "data": result}
 
