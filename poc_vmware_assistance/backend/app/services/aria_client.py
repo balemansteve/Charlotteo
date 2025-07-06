@@ -15,11 +15,37 @@ class AriaClient:
     def __init__(self):
         self.base_url = settings.ARIA_API_URL
         self.session = requests.Session()
-        self.session.auth = (settings.ARIA_API_USER, settings.ARIA_API_PASSWORD)
-        self.session.headers.update({
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-        })
+        self.token = None
+        self.authenticate()
+
+    def authenticate(self):
+            """
+            Autenticación por token en Aria Operations.
+            """
+            auth_url = f"{self.base_url}/suite-api/api/auth/token/acquire"
+            payload = {
+                "username": settings.ARIA_API_USER,
+                "authSource": "LOCAL",  # Ajustar si cambia el origen (LDAP, etc.)
+                "password": settings.ARIA_API_PASSWORD
+            }
+
+            try:
+                response = self.session.post(auth_url, json=payload, verify=False)
+                response.raise_for_status()
+                self.token = response.json().get("token")
+
+                if not self.token:
+                    raise ValueError("No token received from Aria Operations")
+
+                # Establecer token en headers
+                self.session.headers.update({
+                    "Authorization": f"vRealizeOpsToken {self.token}",
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                })
+
+            except requests.RequestException as e:
+                raise RuntimeError(f"Authentication failed: {str(e)}")
 
     def get_top_vms_by_metric(self, metric: str, limit: int, time_range: str = "last_1h"):
         """
