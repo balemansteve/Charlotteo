@@ -17,6 +17,7 @@ import ChatMessage from './components/ChatMessage'
 import ChatInput from './components/ChatInput'
 import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
+import logoVerde from './assets/logo-verde.png';
 
 function App() {
   const [messages, setMessages] = useState([])
@@ -66,7 +67,7 @@ function App() {
 
       setMessages((prev) => [
         ...prev,
-        { text: response.data.response, isUser: false, name: 'VMware Assistance' },
+        { text: response.data.response, isUser: false, name: 'Charlotteo' },
       ])
     } catch (error) {
       console.error('Error:', error)
@@ -87,14 +88,14 @@ function App() {
       {
         text: '¡Hola! Consulta aquí cualquier duda sobre tu infraestructura VMware.',
         isUser: false,
-        name: 'VMware Assistance',
+        name: 'Charlotteo',
       },
     ])
   }
 
   const bgMain =
     colorMode === 'dark'
-      ? 'radial-gradient(circle at 50% 50%, #2d2d2d 0%, #1E1E1E 80%)'
+      ? 'radial-gradient(circle at 50% 50%,rgb(14, 13, 13) 70%,rgb(24, 23, 23) 100%)'
       : '#FFFFFF'
   const bgInput = colorMode === 'dark' ? '#2d2d2d' : '#f5f5f5'
   const textColor = colorMode === 'dark' ? '#FFFFFF' : '#1E1E1E'
@@ -115,12 +116,26 @@ function App() {
             onAnimationStart={() => setIsTransitioning(true)}
             onAnimationComplete={() => setIsTransitioning(false)}
           >
-            <Box minH="100vh" display="flex" flexDirection="column" alignItems="center" justifyContent="center" bg={bgMain}>
-              <Heading size="2xl" color="#2E8B57" letterSpacing="tight" mb={2} className="app-title">
-                VMware Assistance
+            <Box minH="100vh" display="flex" flexDirection="column" alignItems="center" bg={bgMain} style={{ paddingTop: '29vh' }}>
+              <img src={logoVerde} alt="Logo Charlotteo" style={{ width: '170px', height: 'auto', marginBottom: '12px' }} />
+              <Heading
+                size="2xl"
+                letterSpacing="tight"
+                mb={2}
+                className="app-title"
+                style={{
+                  fontSize: '5.5rem',
+                  color: colorMode === 'dark' ? '#FFFFFF' : '#000000',
+                  fontWeight: 700,
+                  lineHeight: 1.1,
+                }}
+              >
+                Charlo
+                <span style={{ color: '#00fe4e' }}>tt</span>
+                eo
               </Heading>
-              <Text color={subtitleColor} fontSize="xl" mb={8}>
-                Diagnóstico inteligente de infraestructura virtual
+              <Text color={subtitleColor} fontSize="1.2rem" mb={10}>
+              Diagnóstico inteligente de infraestructura VMware
               </Text>
               <motion.div
                 initial={{ opacity: 0, y: 40 }}
@@ -186,11 +201,32 @@ function App() {
               {/* header */}
               <Box w="100%" px={12} pt={8} pb={2} position="relative" bg="transparent">
                 <Box textAlign="center">
-                  <Heading size="2xl" color="#2E8B57" letterSpacing="tight" className="app-title">
-                    VMware Assistance
+                  <img
+                    src={logoVerde}
+                    alt="Logo Charlotteo"
+                    style={{ width: '80px', height: 'auto', marginBottom: '6px', cursor: 'pointer' }}
+                    onClick={() => setChatOpen(false)}
+
+                  />
+                  <Heading
+                    size="2xl"
+                    letterSpacing="tight"
+                    className="app-title"
+                    style={{
+                      fontSize: '5.5rem',
+                      color: colorMode === 'dark' ? '#FFFFFF' : '#000000',
+                      fontWeight: 700,
+                      lineHeight: 1.1,
+                      marginTop: '0.5rem',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
+                    Charlo
+                    <span style={{ color: '#00fe4e' }}>tt</span>
+                    eo
                   </Heading>
-                  <Text color={subtitleColor} fontSize="xl" mt={2}>
-                    Diagnóstico inteligente de infraestructura virtual
+                  <Text color={subtitleColor} fontSize="1.2rem" mt={0} mb={2}>
+                    Diagnóstico inteligente de infraestructura VMware
                   </Text>
                 </Box>
                 <Box position="absolute" top={8} right={12} display="flex" alignItems="center" gap={2}>

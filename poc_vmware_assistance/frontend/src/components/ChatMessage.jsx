@@ -13,6 +13,7 @@ const ChatMessage = ({ message, isUser }) => {
       status: 'success',
       duration: 2000,
       isClosable: true,
+      position: 'top',
     })
   }
 
@@ -21,7 +22,7 @@ const ChatMessage = ({ message, isUser }) => {
       <Flex w="100%" justify="flex-end" mb={4} px={4}>
         <Box maxW={{ base: '90%', md: '70%' }}>
           <Box
-            bg="#2E8B57"
+            bg="#00b94e"
             color="white"
             p={3}
             borderRadius="20px 20px 5px 20px"
@@ -49,10 +50,10 @@ const ChatMessage = ({ message, isUser }) => {
   return (
     <Flex w="100%" justify="flex-start" mb={4} px={4}>
       <Flex align="flex-start">
-        <Avatar size="sm" icon={<FaRobot size={20} />} bg="accent.200" mr={3} />
+        <Avatar size="sm" icon={<FaRobot size={20} />} bg="#00b94e" mr={3} />
         <Box maxW={{ base: '90%', md: '70%' }}>
           <Text fontWeight="bold" mb={2} color={colorMode === 'dark' ? 'text.200' : 'gray.700'}>
-            {message.name || 'VMware Assistance'}
+            {message.name || 'Charlotteo'}
           </Text>
           <Text
             whiteSpace="pre-wrap"
