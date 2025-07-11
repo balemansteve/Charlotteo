@@ -62,25 +62,35 @@ class OpenAIClient:
             function_name = message["function_call"]["name"]
             arguments = json.loads(message["function_call"]["arguments"])
 
-            # Ejecutar función real en backend
-            function_result = self.executor.execute(function_name, arguments)
+            try:
+                # Ejecutar función real en backend
+                function_result = self.executor.execute(function_name, arguments)
 
-            # Agregar llamada de función y resultado al historial de mensajes
-            messages.append(message)  # función pedida
-            messages.append({
-                "role": "function",
-                "name": function_name,
-                "content": json.dumps(function_result)  # <-- IMPORTANTE: debe ser string
-            })
+                # Agregar llamada de función y resultado al historial de mensajes
+                messages.append(message)  # función pedida
+                messages.append({
+                    "role": "function",
+                    "name": function_name,
+                    "content": json.dumps(function_result)  # Debe ser string
+                })
 
-            # Segunda llamada: OpenAI interpreta y redacta
-            followup = openai.ChatCompletion.create(
-                model=self.model,
-                messages=messages,
-                temperature=self.temperature
-            )
+                # Segunda llamada: OpenAI interpreta y redacta
+                followup = openai.ChatCompletion.create(
+                    model=self.model,
+                    messages=messages,
+                    temperature=self.temperature
+                )
 
-            return followup["choices"][0]["message"]["content"]
+                return followup["choices"][0]["message"]["content"]
+
+            except Exception as e:
+                import traceback
+                traceback_str = traceback.format_exc()
+                return {
+                    "status": "error",
+                    "message": f"Error ejecutando función '{function_name}': {str(e)}",
+                    "traceback": traceback_str
+                }
 
         else:
             return message["content"]
