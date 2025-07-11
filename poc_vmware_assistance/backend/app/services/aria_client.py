@@ -75,34 +75,57 @@ class AriaClient:
             raise RuntimeError(f"Request to {endpoint} failed: {str(e)}")
 
     def get_top_vms_by_metric(self, metric: str, limit: int, time_range: str = "last_1h"):
-        resource_ids = self.get_vm_resource_ids()
-        if not resource_ids:
-            return {"status": "error", "message": "No se pudieron obtener resourceIds de las VMs."}
+        vms = self.get_vm_resource_ids()
+        if isinstance(vms, dict) and vms.get("status") == "error":
+            return vms
+
+        vm_ids = [vm["id"] for vm in vms]
+
+        # Definir el rango de tiempo en milisegundos
+        time_range_map = {
+            "last_1h": 60,
+            "last_3d": 3 * 24 * 60
+        }
+        minutes = time_range_map.get(time_range, 60)
+        end_time = int(time.time() * 1000)
+        start_time = end_time - (minutes * 60 * 1000)
 
         payload = {
-            "statKeys": [metric],
-            "resourceId": resource_ids
+            "resourceIds": vm_ids,
+            "statKey": [metric],
+            "startTime": start_time,
+            "endTime": end_time,
+            "rollUpType": "AVG",
+            "intervalType": "MINUTES",
+            "maxSamples": 1
         }
 
         try:
-            response = self.request("POST", "/suite-api/api/resources/stats/latest", json=payload)
-            data = response.json()
+            response = self.request("POST", "/suite-api/api/resources/stats/query", json=payload)
+            result = response.json()
 
             vm_metrics = []
-            for stat in data.get("values", []):
-                resource_id = stat.get("resourceId")
-                stat_list = stat.get("stat-list", {}).get("stat", [])
-                if stat_list:
-                    value = stat_list[0].get("data", [0])[0]
-                    name = self.get_vm_name_by_id(resource_id)
-                    vm_metrics.append({"vm_name": name, "value": value})
+            for stat_entry in result.get("values", []):
+                rid = stat_entry.get("resourceId")
+                stats = stat_entry.get("stat-list", {}).get("stat", [])
+                if not stats:
+                    continue
+                data = stats[0].get("data", [])
+                if not data:
+                    continue
+                value = data[0]
+                name = self.get_vm_name_by_id(rid)
+                vm_metrics.append({
+                    "vm_name": name,
+                    "value": value
+                })
 
             vm_metrics_sorted = sorted(vm_metrics, key=lambda x: x["value"], reverse=True)[:limit]
-
             return {"status": "success", "data": vm_metrics_sorted}
 
         except requests.exceptions.RequestException as e:
             return {"status": "error", "message": f"Aria API error: {str(e)}"}
+
 
     def get_vms_with_metric_threshold(self, metric: str, operator: str, value: float, time_range: str = "last_1h"):
         vms = self.get_vm_resource_ids()
