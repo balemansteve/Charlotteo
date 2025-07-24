@@ -1,15 +1,19 @@
+<div align="center">
+  <img width="200" height="200" alt="logo charlotteo png" src="https://github.com/user-attachments/assets/cac13aae-b54e-4171-a59d-b2ca3decfe87" />
+</div>
+
 <a id="readme-top"></a>
 # Charlotteo - MVP for Holberton School
 
 Este proyecto es un asistente conversacional basado en lenguaje natural que permite consultar métricas de VMware Aria Operations a través de una API RESTful. El chatbot utiliza OpenAI como LLM para interpretar la intención del usuario y consultar métricas a la API de VMware.
 
-## 📝 Notas
+## Notas
 - El proyecto requiere credenciales reales para funcionar correctamente.
 - El entorno productivo no está disponible públicamente por motivos de seguridad.
 
 ---
 
-## 📚 Tabla de Contenidos
+## Contenido
 
 - [Tecnologías utilizadas](#tecnologías-utilizadas)
 - [Requisitos previos](#requisitos-previos)
@@ -22,17 +26,17 @@ Este proyecto es un asistente conversacional basado en lenguaje natural que perm
 ---
 
 ## Tecnologías utilizadas
-### 🖥️ Backend 
+### Backend 
 - Python 3.10 + (FastAPI, Pydantic)
 - OpenAI API (function calling)
 - VMware Aria Operations API
-### 🌐 Frontend
+### Frontend
 - HTML y CSS
 - JavaScript
 - Node.js
-### 🧪 Testing
+### Testing
 - Pytest
-### 🔀 Control de versiones
+### Control de versiones
 - Git
 
 ---
@@ -46,7 +50,7 @@ Este proyecto es un asistente conversacional basado en lenguaje natural que perm
 
 ---
 
-## 🔧 Instalación y configuración
+## Instalación y configuración
 
 ### 1. Clonar el repositorio
 
@@ -110,7 +114,7 @@ http://localhost:3000
 
 ---
 
-## 📦 Estructura del proyecto
+## Estructura del proyecto
 
 ```plaintext
 poc_vmware_assistance/
@@ -124,7 +128,7 @@ poc_vmware_assistance/
 
 ---
 
-## 📖 Uso de Swagger
+## Uso de Swagger
 
 El backend implementado con FastAPI expone una documentación automática de todos los endpoints utilizando **Swagger UI**.
 
@@ -153,9 +157,11 @@ http://localhost:8000/docs
 
 ---
 
-## 👥 Equipo
+## Equipo
 
-- **Bryan Alemán** - Backend Developer
-- **Ignacio Devita** - Frontend Developer
-- **Marcos Pessano** - Project Manager
+[**Bryan Alemán** - Backend Developer](https://github.com/balemansteve)
+
+[**Ignacio Devita** - Frontend Developer](https://github.com/nyacho04)
+
+[**Marcos Pessano** - Project Manager](https://github.com/kimikoultramega)
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
