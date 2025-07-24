@@ -1,5 +1,5 @@
 <a id="readme-top"></a>
-# Charlotteo (VMware Assistance) - MVP
+# Charlotteo - MVP for Holberton School
 
 Este proyecto es un asistente conversacional basado en lenguaje natural que permite consultar métricas de VMware Aria Operations a través de una API RESTful. El chatbot utiliza OpenAI como LLM para interpretar la intención del usuario y consultar métricas a la API de VMware.
 
