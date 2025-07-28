@@ -55,7 +55,7 @@ Este proyecto es un asistente conversacional basado en lenguaje natural que perm
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/balemansteve/vmware-assistant.git
+git clone https://github.com/balemansteve/charlotteo.git
 ```
 
 ### 2. Backend (Python - FastAPI)
@@ -71,12 +71,12 @@ venv\Scripts\activate.bat   # En Windows
 #### Instalar dependencias
 
 ```bash
-pip install -r poc_vmware_assistance/backend/requirements.txt
+pip install -r backend/requirements.txt
 ```
 
 #### Crear archivo de entorno
 
-Crear un archivo `.env` en la raíz del backend `poc_vmware_assistance/backend` con las siguientes variables y cambiar por los valores reales:
+Crear un archivo `.env` en la raíz del backend `/backend` con las siguientes variables y cambiar por los valores reales:
 
 ```dotenv
 OPENAI_API_KEY=sk-xxxx
@@ -92,7 +92,7 @@ ARIA_HOST=https://mi-aria.local
 Ejecutar el script incluido en la raíz del backend:
 
 ```bash
-cd poc_vmware_assistance/backend
+cd backend
 bash start_server.sh
 ```
 
@@ -104,7 +104,7 @@ http://localhost:8000
 ### 4. Frontend (Node.js)
 
 ```bash
-cd poc_vmware_assistance/frontend
+cd frontend
 npm install
 npm run dev
 ```
@@ -117,13 +117,14 @@ http://localhost:3000
 ## Estructura del proyecto
 
 ```plaintext
-poc_vmware_assistance/
+charlotteo/
 ├── backend/               # Código principal del backend
 │   ├── app/               
 │   ├── start_server.sh    # Script para levantar FastAPI
 │   └── .env               # Variables de entorno
 ├── frontend/              # Código principal del frontend
 ├── test/                  # Testing
+├── README.md              # Documentación
 ```
 
 ---
