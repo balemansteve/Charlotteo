@@ -4,7 +4,7 @@ Crea la instancia de FastAPI y se incluye el router.
 """
 
 from fastapi import FastAPI
-from app.api.v1.endpoints import prompt, metrics
+from app.api.v1.endpoints import prompt
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
@@ -22,4 +22,3 @@ app.add_middleware(
 )
 
 app.include_router(prompt.router, prefix="/api/v1/prompt", tags=["Prompt"])
-app.include_router(metrics.router, prefix="/api/v1/metrics", tags=["Metrics"])
