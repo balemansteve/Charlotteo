@@ -1,3 +1,9 @@
+"""
+Módulo que gestiona la interacción con la API de OpenAI para
+enviar prompts, manejar function calling y generar respuestas
+basadas en datos técnicos de VMware.
+"""
+
 import openai
 import json
 from app.core.config import settings
